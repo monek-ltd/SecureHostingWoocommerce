@@ -77,14 +77,6 @@ Troubleshooting
     - You have activated the Advanced Secuitems within your UPG PLC account but not correctly configured it. Please see steps 1-3 of the Advanced Configuration section of this guide.
 
 
-Contact
--------
-
-If you have any problems installing this module feel free to contact our support team at:
-
-* Support Tel     : +44(0) 845 269 6645
-* Support Email   : support@upg.co.uk
-
 Change Log
 ----------
 
