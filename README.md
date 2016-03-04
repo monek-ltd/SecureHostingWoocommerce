@@ -4,12 +4,12 @@ UPG Payment Gateway (Legacy) for WooCommerce
 Manual Installation
 -------------------
 
-1.	Copy the folder 'upg-legacy' to the \wp-content\plugins\ directory for your WordPress website.
+1. Copy the folder 'upg-legacy' to the \wp-content\plugins\ directory for your WordPress website.
 
-2.	Within the WordPress Admin Dashboard, open the plugins tab and activate the "UPG Payment Gateway (Legacy) for WooCommerce" plugin.
+2. Within the WordPress Admin Dashboard, open the plugins tab and activate the "UPG Payment Gateway (Legacy) for WooCommerce" plugin.
         If you have not already activated and configured WooCommerce you should also do this first.
 
-3.	Once activated, you can enter the settings for the plugin and enable the payment gateway. You will also need to configure the below settings
+3. Once activated, you can enter the settings for the plugin and enable the payment gateway. You will also need to configure the below settings
 		in order to complete the basic setup:
 
 - **Reference** - This is the reference for your UPG PLC account. This is also known as the client login,
@@ -24,13 +24,10 @@ Manual Installation
 		You can rename this file if you desire, you only need to ensure the name of the file you upload to
 		your UPG PLC account is correctly set here.
 
-4.	Upload the HTML files from the "forms" directory to your secure hosting account through the file manager. We recommend uploading
-		the default files first, testing, then amending these files as required. File uploads are managed within
-		your UPG plc account via the menu option Settings > File Manager:
-	
-- woo_template.html
-- htmlgood.html
-- htmlbad.html
+4. Upload the HTML files from the "forms" directory to your secure hosting account through the file manager. We recommend uploading the default files first, testing, then amending these files as required. File uploads are managed within your UPG plc account via the menu option Settings > File Manager:
+    - woo_template.html
+    - htmlgood.html
+    - htmlbad.html
     
 5.	You are now ready to go.
 
