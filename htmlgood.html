@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<title>Payment Confirmation Redirect</title>
+			<script src="https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
+			<script type="text/javascript">
+				var ReturnUrl = '$returnurl';
+				if(/[?]/.test(ReturnUrl)){
+					var Href = ReturnUrl+'&orderid=$orderid&ordstatus=$ordstatus&transactionamount=$transactiontotal&transactionnumber=$trannum&verify='+CryptoJS.SHA1('$trannum$transactiontotal');
+				} else {
+					var Href = ReturnUrl+'?orderid=$orderid&ordstatus=$ordstatus&transactionamount=$transactiontotal&transactionnumber=$trannum&verify='+CryptoJS.SHA1('$trannum$transactiontotal');
+				}
+				location.href = Href;
+			</script>
+		</head>
+	<body>
+		You are about to be redirected - please wait ...
+	</body>
+</html>
