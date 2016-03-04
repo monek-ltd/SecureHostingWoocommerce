@@ -12,14 +12,14 @@ Manual Installation
 3. Once activated, you can enter the settings for the plugin and enable the payment gateway. You will also need to configure the below settings
 		in order to complete the basic setup:
 
-- **Reference** - This is the reference for your UPG PLC account. This is also known as the client login,
+    - **Reference** - This is the reference for your UPG PLC account. This is also known as the client login,
 	you will find the value for this within the company details section of your UPG PLC account.
 
-- **Check Code** - This is the second level security check code for your UPG PLC account, it is a second
+    - **Check Code** - This is the second level security check code for your UPG PLC account, it is a second
 		unique identifier for your account. The value of your check code can be found within the company
 		details section of your UPG PLC account.
 
-- **File Name** - This is the file name of the payment page template you need to upload to your UPG PLC
+    - **File Name** - This is the file name of the payment page template you need to upload to your UPG PLC
 		account. The file name of the example template provided with this integration module is "woo_template.html". 
 		You can rename this file if you desire, you only need to ensure the name of the file you upload to
 		your UPG PLC account is correctly set here.
