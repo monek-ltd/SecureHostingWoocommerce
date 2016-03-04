@@ -18,6 +18,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $this->description = $this->get_option('description');
         $this->reference = $this->get_option('reference');
         $this->checkcode = $this->get_option('checkcode');
+        $this->sharedSecret = $this->get_option('sharedSecret');
         $this->ordstatus = $this->get_option('ordstatus');
         $this->filename = $this->get_option('filename');
         $this->activateas = isset($this->settings['activateas']) && $this->settings['activateas'] == 'yes' ? 'yes' : 'no';
@@ -26,8 +27,9 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $this->testmode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? 'yes' : 'no';
 
         // UPG hosted pages urls
-        $this->liveurl = 'http://www.secure-server-hosting.com/secutran/secuitems.php';
         $this->testurl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
+        //$this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
+        $this->liveurl = 'http://192.168.56.1:8080/secutran/secuitems.php';
 
         // save settings
         if (is_admin()) {
@@ -81,6 +83,14 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 'description' => __('The check code for your SecureHosting account.', 'woocommerce'),
                 'default' => '',
                 'placeholder' => 'XXXXXX',
+                'desc_tip' => true
+            ),
+            'sharedSecret' => array(
+                'title' => __('Shared Secret', 'woocommerce'),
+                'type' => 'text',
+                'description' => __('The shared secret used to verify callbacks come from UPG.', 'woocommerce'),
+                'default' => '',
+                'placeholder' => '',
                 'desc_tip' => true
             ),
             'filename' => array(
@@ -177,13 +187,20 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
     function handle_payment_callback($order_id)
     {
-
         // grab the order
         $order = wc_get_order($_REQUEST['order_id']);
 
         // grab the transaction number & auth code
         $transactionNumber = $_REQUEST['transactionnumber'];
         $failureReason = $_REQUEST['failurereason'];
+        $verify = $_REQUEST['verify'];
+
+        // did we fail the verification?
+        if ($this->sharedSecret !== "" && !(isset($_REQUEST['verify']) && $this->verify_callback($verify, $this->sharedSecret, $transactionNumber))) {
+            $note = 'Callback received using an invalid shared secret. Please check with UPG if this transaction was succesful. (Transaction ID ' . $transactionNumber . ')';
+            $order->add_order_note(__($note, 'woocommerce'));
+            return;
+        }
 
         // did the payment fail?
         if (!isset($_REQUEST['upgauthcode']) && isset($_REQUEST['failurereason']) && $transactionNumber === '-1') {
@@ -195,7 +212,8 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         }
 
         // mark as payment complete
-        $note = 'Payment confirmed by UPG: (Transaction ID ' . $transactionNumber . ')';
+        $andVerified = $this->sharedSecret !== '' ? ' and callback verified ' : ' ';
+        $note = 'Payment confirmed' . $andVerified . 'by UPG: (Transaction ID ' . $transactionNumber . ')';
         $order->add_order_note(__($note, 'woocommerce'));
         $order->payment_complete();
         return;
@@ -305,11 +323,11 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         wp_die($redirectForm, array('response' => 200));
     }
 
-    function verify_callback($sharedSecret)
+    function verify_callback($verify, $sharedSecret, $transactionNumber)
     {
         global $woocommerce;
 
-        // TODO: create the code to verify the callback came from UPG
+        return $verify === sha1($sharedSecret . $transactionNumber . $sharedSecret);
     }
 
     function build_secuitems($products)
