@@ -195,7 +195,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $failureReason = $_REQUEST['failurereason'];
         $verify = $_REQUEST['verify'];
 
-        // did we fail the verification?
+        // did we fail the verification? (no secret saved = no verification, otherwise is must match the provided signature)
         if ($this->sharedSecret !== "" && !(isset($_REQUEST['verify']) && $this->verify_callback($verify, $this->sharedSecret, $transactionNumber))) {
             $note = 'Callback received using an invalid shared secret. Please check with UPG if this transaction was succesful. (Transaction ID ' . $transactionNumber . ')';
             $order->add_order_note(__($note, 'woocommerce'));
