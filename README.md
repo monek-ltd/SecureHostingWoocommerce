@@ -1,17 +1,10 @@
-=========================================
-Plugin Name: UPG Payment Gateway (Legacy) for WooCommerce
-Plugin URI: http://www.upgplc.com/
-Description: UPG Payment Gateway for WooCommerce
-Version: 2.0
-Author: UPG Plc
-Author URI: http://www.upgplc.com/
-=========================================
+UPG Payment Gateway (Legacy) for WooCommerce
+============================================
 
-===============
-= Manual Installation  =
-===============
+Manual Installation
+-------------------
 
-1.	Copy the folder 'upg' to the \wp-content\plugins\ directory for your WordPress website.
+1.	Copy the folder 'upg-legacy' to the \wp-content\plugins\ directory for your WordPress website.
 
 2.	Within the WordPress Admin Dashboard, open the plugins tab and activate the "UPG Payment Gateway (Legacy) for WooCommerce" plugin.
         If you have not already activated and configured WooCommerce you should also do this first.
@@ -19,35 +12,34 @@ Author URI: http://www.upgplc.com/
 3.	Once activated, you can enter the settings for the plugin and enable the payment gateway. You will also need to configure the below settings
 		in order to complete the basic setup:
 
-	- Reference - This is the reference for your UPG PLC account. This is also known as the client login,
-		you will find the value for this within the company details section of your UPG PLC account.
+- **Reference** - This is the reference for your UPG PLC account. This is also known as the client login,
+	you will find the value for this within the company details section of your UPG PLC account.
 
-	- Check Code - This is the second level security check code for your UPG PLC account, it is a second
+- **Check Code** - This is the second level security check code for your UPG PLC account, it is a second
 		unique identifier for your account. The value of your check code can be found within the company
 		details section of your UPG PLC account.
 
-	- File Name - This is the file name of the payment page template you need to upload to your UPG PLC
+- **File Name** - This is the file name of the payment page template you need to upload to your UPG PLC
 		account. The file name of the example template provided with this integration module is "woo_template.html". 
 		You can rename this file if you desire, you only need to ensure the name of the file you upload to
 		your UPG PLC account is correctly set here.
 
-4.	Upload the below HTML files to your secure hosting account through the file manager. We recommend uploading
+4.	Upload the HTML files from the "forms" directory to your secure hosting account through the file manager. We recommend uploading
 		the default files first, testing, then amending these files as required. File uploads are managed within
 		your UPG plc account via the menu option Settings > File Manager:
 	
-	- woo_template.html
-	- htmlgood.html
-	- htmlbad.html
+- woo_template.html
+- htmlgood.html
+- htmlbad.html
     
 5.	You are now ready to go.
 
-==========================
-= Advanced Configuration =
-==========================
 
-======================
-= Advanced Secuitems =
-======================
+Advanced Configuration
+----------------------
+
+### Advanced Secuitems
+
 The UPG PLC system supports the facility to secure your checkout from tempering, the facility is supported by
 the Advanced Secuitems feature. In order for the Advanced Secuitems to work correctly, it must be correctly
 configured in both the WooCommerce admin interface and your UPG plc account. The settings for the Advanced Secuitems
@@ -72,36 +64,36 @@ the list of fields to be encrypted.
 5.	Test Mode - The UPG plc system can run in test mode and processes your transactions as test transaction. Change this
 		setting to True to use the test mode. Don't forget to change this back to False before going live!
 
-===================
-= Troubleshooting =
-===================
+Troubleshooting
+-------------------
 
-Q1.	When I get transferred to the UPG plc Site the following message appears: The file SH2?????/ does not exist
+- When I get transferred to the UPG plc Site the following message appears: "_The file SH2?????/ does not exist_"
+    - You have not completed steps 3 and/or 4 of the installation.
 
-A1.	You have not completed steps 3 and/or 4 of the installation.
+- When a transaction is submitted the following error is displayed: Merchant Implementation Error - Incorrect client SH reference and check code combination
+    - You have entered an incorrect client reference or check code into the WooCommerce Admin interface.
 
-Q2.	When a transaction is submitted the following error is displayed: Merchant Implementation Error - Incorrect client SH reference and check code combination
-	
-A2.	You have entered an incorrect client reference or check code into the WooCommerce Admin interface.
+- When I get transferred to the UPG PLC site, the following message appears: Advanced Secuitems security check failed.
+    - You have activated the Advanced Secuitems within your UPG PLC account but not correctly configured it. Please see steps 1-3 of the Advanced Configuration section of this guide.
 
-Q3.	When I get transferred to the UPG PLC site, the following message appears: Advanced Secuitems security check failed.
 
-A3.	You have activated the Advanced Secuitems within your UPG PLC account but not correctly configured it. Please see steps 1-3 of the Advanced Configuration section of this guide.
-
-===========
-= Contact =
-===========
+Contact
+-------
 
 If you have any problems installing this module feel free to contact our support team at:
-Support Tel     : +44(0) 845 269 6645
-Support Email   : support@upg.co.uk 
 
-==============
-= Change Log =
-==============
+* Support Tel     : +44(0) 845 269 6645
+* Support Email   : support@upg.co.uk
 
-Version 0.1
-- Date:		04/03/2016
-- Details:
-* Added support for WooCommerce version 2.5.3
+Change Log
+----------
+
+#### Version 0.1
+**Date**: _04/03/2016_
+
+##### Details:
+* Added support for WooCommerce versions >= 2.0.0
+* AS hashes built locally.
+* Redirect is done via WC-API and a self-posting form. This allows greater amounts of data from the cart.
+* Rebranded for UPG Legacy.
 

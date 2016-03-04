@@ -26,17 +26,17 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $this->testmode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? 'yes' : 'no';
 
         // UPG hosted pages urls
-        $this->liveurl = 'http://192.168.56.1:8080/secutran/secuitems.php';
+        $this->liveurl = 'http://www.secure-server-hosting.com/secutran/secuitems.php';
         $this->testurl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
-        $this->asurl = 'https://www.secure-server-hosting.com/secutran/create_secustring.php';
 
         // save settings
         if (is_admin()) {
-            // Versions over 2.0
-            // Save our administration options. Since we are not going to be doing anything special
-            // we have not defined 'process_admin_options' in this class so the method in the parent
-            // class will be used instead
-            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+
+            if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {
+                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
+            } else {
+                add_action('woocommerce_update_options_payment_gateways', array(&$this, 'process_admin_options'));
+            }
         }
 
         // hooks
@@ -183,7 +183,6 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // grab the transaction number & auth code
         $transactionNumber = $_REQUEST['transactionnumber'];
-        $upgAuthCode = $_REQUEST['upgauthcode'];
         $failureReason = $_REQUEST['failurereason'];
 
         // did the payment fail?
@@ -340,10 +339,10 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         return $secuitems;
     }
 
-    function sign_secuitems($secuItems, $transactionAmount)
+    function sign_secuitems($secuitems, $transactionAmount)
     {
         // calculate the hash of the products, the amount and the shared phrase
-        $secustring = 'value="' . md5($secuItems . $transactionAmount . $this->phrase) . '"';
+        $secustring = 'value="' . md5($secuitems . $transactionAmount . $this->phrase) . '"';
 
         return $secustring;
     }

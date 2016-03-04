@@ -1,14 +1,13 @@
 <?php
 /*
 Plugin Name: UPG Payment Gateway (Legacy) for WooCommerce
-Plugin URI: http://www.upgplc.com/
 Description: UPG Payment Gateway for WooCommerce
 Version: 0.1
 Author: UPG Plc
 Author URI: http://www.upgplc.com/
 */
 
-add_action('plugins_loaded', 'woocommerce_gateway_upg_init', 0);
+
 function woocommerce_gateway_upg_init()
 {
 
@@ -29,7 +28,7 @@ function woocommerce_gateway_upg_init()
     function wc_gateway_upg_action_links($links)
     {
         $plugin_links = array(
-            '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_upg') . '">' . __('Settings', 'wc_gateway_upg') . '</a>',
+            '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_gateway_upg') . '">' . __('Settings', 'wc_gateway_upg') . '</a>'
         );
 
         // merge our link with the default ones
@@ -37,4 +36,22 @@ function woocommerce_gateway_upg_init()
     }
 
     add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'wc_gateway_upg_action_links');
+
+    function wc_gateway_upg_plugin_metalinks($links, $file)
+    {
+        if (strpos($file, 'upg-legacy.php') !== false) {
+
+            $new_links = array(
+                '<a href="https://github.com/upgplc/cart_legacy_woocommerce" target="_blank">Repo</a>'
+            );
+
+            $links = array_merge($links, $new_links);
+        }
+
+        return $links;
+    }
+
+    add_filter('plugin_row_meta', 'wc_gateway_upg_plugin_metalinks', 10, 2);
 }
+
+add_action('plugins_loaded', 'woocommerce_gateway_upg_init', 0);
