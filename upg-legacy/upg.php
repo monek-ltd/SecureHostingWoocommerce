@@ -28,7 +28,8 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // UPG hosted pages urls
         $this->testurl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
-        $this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
+        //$this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
+        $this->liveurl = 'http://192.168.56.1:8080/secutran/secuitems.php';
 
         // save settings
         if (is_admin()) {
@@ -218,32 +219,9 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         return;
     }
 
-    function handle_redirect_from_upg($order_id)
-    {
-        global $woocommerce;
-
-        $order = wc_get_order($order_id);
-
-        // check the status, if the callback already happened then do not go back to on-hold
-        if ($order->needs_payment()) {
-            // mark as on-hold (we're awaiting the payment confirmation via callback)
-            $order->update_status('on-hold');
-            $order->add_order_note(__('Awaiting payment confirmation from UPG.', 'woocommerce'));
-        }
-
-        // Reduce stock levels
-        $order->reduce_order_stock();
-
-        // Remove cart
-        $woocommerce->cart->empty_cart();
-
-        // redirect to thank you page
-        $thankyou = WC_Payment_Gateway::get_return_url($order);
-        wp_redirect($thankyou);
-    }
-
     function build_redirect_page($order_id)
     {
+        global $woocommerce;
         $order = wc_get_order($order_id);
 
         //Product data
@@ -275,12 +253,12 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['callbackurl'] = $callbackUrl;
         $transactionData['callbackdata'] = '';
 
-        $returnUrl = WooCommerce::api_request_url('wc_gateway_upg');
-        $returnUrl .= strpos($returnUrl, '?') === false ? '?' : '&';
-        $returnUrl .= 'action=thankyou&order_id=' . $order_id;
+        $thankyouUrl = WooCommerce::api_request_url('wc_gateway_upg');
+        $thankyouUrl .= strpos($thankyouUrl, '?') === false ? '?' : '&';
+        $thankyouUrl .= 'action=thankyou&order_id=' . $order_id;
 
-        $transactionData['success_url'] = $returnUrl;
-        $transactionData['returnurl'] = $returnUrl;
+        $transactionData['success_url'] = $thankyouUrl;
+        $transactionData['return_url'] = $woocommerce->cart->get_cart_url();
 
         // should we secure the transaction?
         if ($this->activateas == 'yes') {
@@ -320,6 +298,30 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $redirectForm .= '<div>Please wait while we redirect you to our secure payment form...</div>';
 
         wp_die($redirectForm, array('response' => 200));
+    }
+
+    function handle_redirect_from_upg($order_id)
+    {
+        global $woocommerce;
+
+        $order = wc_get_order($order_id);
+
+        // check the status, if the callback already happened then do not go back to on-hold
+        if ($order->needs_payment()) {
+            // mark as on-hold (we're awaiting the payment confirmation via callback)
+            $order->update_status('on-hold');
+            $order->add_order_note(__('Awaiting payment confirmation from UPG.', 'woocommerce'));
+        }
+
+        // Reduce stock levels
+        $order->reduce_order_stock();
+
+        // Remove cart
+        $woocommerce->cart->empty_cart();
+
+        // redirect to thank you page
+        $thankyou = WC_Payment_Gateway::get_return_url($order);
+        wp_redirect($thankyou);
     }
 
     function verify_callback($verify, $sharedSecret, $transactionNumber)
