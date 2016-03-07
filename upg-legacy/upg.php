@@ -28,8 +28,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // UPG hosted pages urls
         $this->testurl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
-        //$this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
-        $this->liveurl = 'http://192.168.56.1:8080/secutran/secuitems.php';
+        $this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
 
         // save settings
         if (is_admin()) {
