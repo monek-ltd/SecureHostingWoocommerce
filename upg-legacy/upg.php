@@ -244,19 +244,21 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['transactiondiscount'] = $this->to_standard_format($order->get_total_discount());
         $transactionData['secuitems'] = $secuitems;
 
-        // callback & return urls
-        $callbackUrl = WooCommerce::api_request_url('wc_gateway_upg');
-        $callbackUrl .= strpos($callbackUrl, '?') === false ? '?' : '&';
-        $callbackUrl .= 'action=callback&order_id=' . $order_id;
+        // callback
+        $callbackUrl = site_url(); // WooCommerce::api_request_url('wc_gateway_upg'); $callbackUrl .= strpos($callbackUrl, '?') === false ? '?' : '&';
+        $callbackData = "wc-api|wc_gateway_upg|action|callback|order_id|$order_id";
 
         $transactionData['callbackurl'] = $callbackUrl;
-        $transactionData['callbackdata'] = '';
+        $transactionData['callbackdata'] = $callbackData;
 
+        // success redirect
         $thankyouUrl = WooCommerce::api_request_url('wc_gateway_upg');
         $thankyouUrl .= strpos($thankyouUrl, '?') === false ? '?' : '&';
         $thankyouUrl .= 'action=thankyou&order_id=' . $order_id;
 
         $transactionData['success_url'] = $thankyouUrl;
+
+        // back to cart redirect
         $transactionData['return_url'] = $woocommerce->cart->get_cart_url();
 
         // should we secure the transaction?

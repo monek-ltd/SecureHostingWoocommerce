@@ -1,12 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//Dtd HTML 4.01 Transitional//EN" "http://www.w3.org/tr/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-    <title>SECURE PAYMENT FORM</title>
+    <title>Secure Payment Form</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="/secutran/css/client_main.css" media="screen, projection"/>
-    <link rel="stylesheet" type="text/css" href="/secutran/css/client_style.css" title="color "
-          media="screen, projection"/>
+    <link rel="stylesheet" type="text/css" href="/secutran/css/client_style.css" title="color" media="screen, projection"/>
     <script type="text/javascript">
+
         //RFC 2822 regular expression
         var email = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
@@ -71,22 +71,21 @@
     </script>
 </head>
 <body>
-<form action="/secutran/transactionsi1.php" method="POST" name="basketform" id="basketform"
-      onsubmit="return validateForm(this)">
-    <input type="hidden" name='shreference' value='$shreference'/>
-    <input type="hidden" name='checkcode' value='$checkcode'/>
-    <input type="hidden" name='filename' value='$backfile'/>
+<form action="/secutran/transactionsi1.php" method="POST" name="basketform" id="basketform" onsubmit="return validateForm(this)">
+    <input type="hidden" name="shreference" value="$shreference"/>
+    <input type="hidden" name="checkcode" value="$checkcode"/>
+    <input type="hidden" name="filename" value="$backfile"/>
     <input type="hidden" name="orderid" value="$orderid"/>
-    <input type="hidden" name='subtotal' value='$subtotal'/>
-    <input type="hidden" name='transactionamount' value='$transactionamount'/>
-    <input type="hidden" name='transactioncurrency' value='$transactioncurrency'/>
-    <input type="hidden" name='transactiontax' value='$transactiontax'/>
-    <input type="hidden" name='shippingcharge' value='$shippingcharge'/>
-    <input type="hidden" name='transactiondiscount' value='$transactiondiscount'/>
-    <input type="hidden" name='secuitems' value='$secuitems'/>
-    <input type="hidden" name='secuString' value='$secuString'/>
-    <input type="hidden" name='callbackurl' value='$callbackurl'/>
-    <input type="hidden" name='callbackdata' value='$callbackdata'/>
+    <input type="hidden" name="subtotal" value="$subtotal"/>
+    <input type="hidden" name="transactionamount" value="$transactionamount"/>
+    <input type="hidden" name="transactioncurrency" value="$transactioncurrency"/>
+    <input type="hidden" name="transactiontax" value="$transactiontax"/>
+    <input type="hidden" name="shippingcharge" value="$shippingcharge"/>
+    <input type="hidden" name="transactiondiscount" value="$transactiondiscount"/>
+    <input type="hidden" name="secuitems" value="$secuitems"/>
+    <input type="hidden" name="secuString" value="$secuString"/>
+    <input type="hidden" name="callbackurl" value="$callbackurl"/>
+    <input type="hidden" name="callbackdata" value="$callbackdata"/>
     <input type="hidden" name="success_url" value="$success_url"/>
     <input type="hidden" name="return_url" value="$return_url"/>
     <input type="hidden" name="cardholdersname" value="$cardholdersname"/>
@@ -189,7 +188,7 @@
                                                     Total
                                                 </td>
                                             </tr>
-                                            <loopstart:shoplst>
+                                            <loopstart:shoplst:>
                                                 <tr>
                                                     <td>&nbsp;</td>
                                                     <td valign="top">$itemcode</td>
@@ -197,13 +196,13 @@
                                                         $itemdesc
                                                     </td>
                                                     <td valign="top">$itemquan</td>
-                                                    <td valign="top">$transactioncurrency$itempric</td>
-                                                    <td valign="top">$transactioncurrency$itemtota</td>
+                                                    <td valign="top">$itempric $transactioncurrency</td>
+                                                    <td valign="top">$itemtota $transactioncurrency</td>
                                                 </tr>
-                                                <loopend>
-                                                    <tr>
-                                                        <td colspan="6">&nbsp;</td>
-                                                    </tr>
+                                            <loopend>
+                                            <tr>
+                                                <td colspan="6">&nbsp;</td>
+                                            </tr>
                                         </table>
                                         <div align="right">
                                             <table width="40%" border="0" cellspacing="0" cellpadding="2">
@@ -237,7 +236,7 @@
                                         <div style="clear: both;">
                                             <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                                 <tr>
-                                                    <td colspan="2"><strong>Card Holder Details</td>
+                                                    <td colspan="2"><strong>Card Holder Details</strong></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -281,7 +280,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="2"><strong>Delivery Details</td>
+                                                    <td colspan="2"><strong>Delivery Details</strong></td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -387,7 +386,8 @@
                                                 </tr>
                                                 <tr>
                                                     <td style="text-align: center;">
-                                                        <input type="button" value="Return to Cart" class="button" style="width: 175px"
+                                                        <input type="button" value="Return to Cart" class="button"
+                                                               style="width: 175px"
                                                                onclick="location.href='$return_url'"/>
                                                     </td>
                                                     <td style="text-align: center;">
