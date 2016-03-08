@@ -254,7 +254,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         // success redirect
         $thankyouUrl = WooCommerce::api_request_url('wc_gateway_upg');
         $thankyouUrl .= strpos($thankyouUrl, '?') === false ? '?' : '&';
-        $thankyouUrl .= 'action=thankyou&order_id=' . $order_id;
+        $thankyouUrl .= 'action=thankyou';
 
         $transactionData['success_url'] = $thankyouUrl;
 
