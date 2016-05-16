@@ -308,6 +308,12 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         $order = wc_get_order($order_id);
 
+        if (!isset($order)) {
+            // show an error
+            wp_die("Order ID not recognised.", array('response' => 500));
+            return;
+        }
+
         // check the status, if the callback already happened then do not go back to on-hold
         if ($order->needs_payment()) {
             // mark as on-hold (we're awaiting the payment confirmation via callback)
