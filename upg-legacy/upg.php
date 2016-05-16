@@ -252,11 +252,12 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['callbackdata'] = $callbackData;
 
         // success redirect
-        $thankyouUrl = WooCommerce::api_request_url('wc_gateway_upg');
-        $thankyouUrl .= strpos($thankyouUrl, '?') === false ? '?' : '&';
-        $thankyouUrl .= 'action=thankyou';
+        $successUrl = WooCommerce::api_request_url('wc_gateway_upg');
+        $successUrl .= strpos($successUrl, '?') === false ? '?' : '&';
+        $successUrl .= 'action=thankyou';
+        $successUrl .= '&order_id=' . $order->id;
 
-        $transactionData['success_url'] = $thankyouUrl;
+        $transactionData['success_url'] = $successUrl;
 
         // back to cart redirect
         $transactionData['return_url'] = $woocommerce->cart->get_cart_url();
