@@ -351,11 +351,11 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 }
             }
 
-            $secuitems .= '[' . $item['product_id'] . '||' . $item['name'];
+            $secuitems .= '[' . $item['product_id'] . '||' . htmlentities($item['name'], ENT_QUOTES);
 
             if (!empty($Options)) {
                 foreach ($Options AS $Key => $Value) {
-                    $secuitems .= ', ' . $Key . ': ' . $Value;
+                    $secuitems .= ', ' . htmlentities($Key, ENT_QUOTES) . ': ' . htmlentities($Value, ENT_QUOTES);
                 }
             }
             $secuitems .= '|' . $this->to_standard_format($item['line_total'] / $item['qty'])
