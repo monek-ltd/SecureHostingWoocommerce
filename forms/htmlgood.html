@@ -1,11 +1,10 @@
 <html>
 	<head>
 		<title>Payment Confirmation Redirect</title>
-			<script type="text/javascript">
-				location.href = '$success_url';
-			</script>
+		<meta http-equiv="refresh" content="0;URL='$success_url'" />		
 		</head>
 	<body>
-		You are about to be redirected - please wait ...
+		<p>You are about to be redirected - please wait ...</p>
+		<p><a href="$success_url">Click Here</a> if you do not get redirected directly.
 	</body>
 </html>
