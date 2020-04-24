@@ -1,16 +1,7 @@
 <?php
-/*
-Plugin Name: UPG Payment Gateway (Legacy) for WooCommerce
-Description: UPG Payment Gateway for WooCommerce
-Version: 0.1
-Author: UPG Plc
-Author URI: http://www.upgplc.com/
-*/
-
 
 function woocommerce_gateway_upg_init()
 {
-
     if (!class_exists('WC_Payment_Gateway')) return;
 
     require_once('upg.php');

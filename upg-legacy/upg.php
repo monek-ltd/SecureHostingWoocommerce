@@ -32,7 +32,6 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // save settings
         if (is_admin()) {
-
             if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {
                 add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
             } else {
@@ -46,7 +45,6 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
     function init_form_fields()
     {
-
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enabled', 'woocommerce'),
@@ -127,15 +125,14 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 'desc_tip' => true
             )
         );
-
     }
 
     public function admin_options()
     {
-
         echo '<h3>' . __('UPG Payment Gateway (Legacy)', 'woocommerce') . '</h3>';
         echo '<p>' . __('UPG Payment Gateway (Legacy) sends customers to your secure payment page, hosted by UPG. Please visit <a href="http://www.secure-server-hosting.com/" target="_blank"> Secure Hosting</a> for more information.') . '</p>';
         echo '<table class="form-table">';
+
         // Generate the HTML For the settings form.
         $this->generate_settings_html();
         echo '</table>';
@@ -148,19 +145,16 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // switch on the action
         switch ($action) {
-
             case "callback":
                 // grab the order
                 $order_id = $_REQUEST['order_id'];
                 $this->handle_payment_callback($order_id);
                 wp_die('OK', '', array('response' => 200));
                 break;
-
             case "redirect":
                 $order_id = $_REQUEST['order_id'];
                 $this->build_redirect_page($order_id);
                 break;
-
             case "thankyou":
                 $order_id = $_REQUEST['order_id'];
                 $this->handle_redirect_from_upg($order_id);
