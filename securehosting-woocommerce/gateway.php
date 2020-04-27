@@ -56,7 +56,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
-                'default' => __('SecureHosting', 'woocommerce'),
+                'default' => __('Credit/Debit Card', 'woocommerce'),
                 'desc_tip' => true
             ),
             'description' => array(
@@ -198,7 +198,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         // did the payment fail?
         if (!isset($_REQUEST['upgauthcode']) && isset($_REQUEST['failurereason']) && $transactionNumber === '-1') {
 
-            $note = 'Payment declined by UPG: ' . $failureReason;
+            $note = 'Payment declined: ' . $failureReason;
             $order->add_order_note(__($note, 'woocommerce'));
             $order->update_status('failed');
             return;
@@ -206,7 +206,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // mark as payment complete
         $andVerified = $this->sharedSecret !== '' ? ' and callback verified ' : ' ';
-        $note = 'Payment confirmed' . $andVerified . 'by Monek: (Transaction ID ' . $transactionNumber . ')';
+        $note = 'Payment confirmed' . $andVerified . ': (Transaction ID ' . $transactionNumber . ')';
         $order->add_order_note(__($note, 'woocommerce'));
         $order->payment_complete();
         return;
