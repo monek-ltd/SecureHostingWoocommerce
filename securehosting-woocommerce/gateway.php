@@ -1,22 +1,22 @@
 <?php
 
-class WC_Gateway_UPG extends WC_Payment_Gateway
+// See https://docs.woocommerce.com/document/payment-gateway-api for further details.
+class SecureHostingGateway extends WC_Payment_Gateway
 {
     public function __construct()
     {
         $this->id = 'securehosting';
         $this->has_fields = false;
-        $this->icon = apply_filters('woocommerce_upg_icon', plugins_url('upg.png', __FILE__));
+        $this->icon = plugins_url('monek-logo.png', __FILE__);
 
         // these are used in WordPress administration, in WooCommerce > Settings > Payments.
         $this->method_title = __('SecureHosting', 'woocommerce');
         $this->method_description = __('Pay securely via SecureHosting with your credit/debit card.', 'woocommerce');
 
-        // load the settings.
         $this->init_form_fields();
         $this->init_settings();
 
-        // define user set variables
+        // load the value from each field in 'Settings' into a variable.
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->reference = $this->get_option('reference');
@@ -27,11 +27,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $this->activateas = isset($this->settings['activateas']) && $this->settings['activateas'] == 'yes' ? 'yes' : 'no';
         $this->phrase = $this->get_option('phrase');
         $this->referrer = $this->get_option('referrer');
-        $this->testmode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? 'yes' : 'no';
-
-        // SecureHosting hosted pages urls
-        $this->testurl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
-        $this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
+        $this->testMode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? true : false;
 
         // save settings
         if (is_admin()) {
@@ -43,7 +39,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         }
 
         // hooks
-        add_action('woocommerce_api_wc_gateway_upg', array(&$this, 'wc_gateway_upg_callbacks'));
+        add_action('woocommerce_api_securehosting', array(&$this, 'handle_actions'));
     }
 
     function init_form_fields()
@@ -138,10 +134,11 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // Generate the HTML For the settings form.
         $this->generate_settings_html();
+
         echo '</table>';
     }
 
-    public function wc_gateway_upg_callbacks()
+    public function handle_actions()
     {
         // grab the action param
         $action = $_REQUEST['action'];
@@ -160,7 +157,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 break;
             case "thankyou":
                 $order_id = $_REQUEST['order_id'];
-                $this->handle_redirect_from_upg($order_id);
+                $this->handle_redirect_from_securehosting($order_id);
                 break;
             default:
                 wp_die('Incorrect method supplied.');
@@ -171,7 +168,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
     function process_payment($order_id)
     {
         // build the redirect url
-        $redirectUrl = WooCommerce::api_request_url('wc_gateway_upg');
+        $redirectUrl = WooCommerce::api_request_url('securehosting');
         $redirectUrl .= strpos($redirectUrl, '?') === false ? '?' : '&';
         $redirectUrl .= 'action=redirect&order_id=' . $order_id;
 
@@ -242,14 +239,14 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['secuitems'] = $secuitems;
 
         // callback
-        $callbackUrl = site_url(); // WooCommerce::api_request_url('wc_gateway_upg'); $callbackUrl .= strpos($callbackUrl, '?') === false ? '?' : '&';
-        $callbackData = "wc-api|wc_gateway_upg|action|callback|order_id|$order_id";
+        $callbackUrl = site_url(); // WooCommerce::api_request_url('securehosting'); $callbackUrl .= strpos($callbackUrl, '?') === false ? '?' : '&';
+        $callbackData = "wc-api|securehosting|action|callback|order_id|$order_id";
 
         $transactionData['callbackurl'] = $callbackUrl;
         $transactionData['callbackdata'] = $callbackData;
 
         // success redirect
-        $successUrl = WooCommerce::api_request_url('wc_gateway_upg');
+        $successUrl = WooCommerce::api_request_url('securehosting');
         $successUrl .= strpos($successUrl, '?') === false ? '?' : '&';
         $successUrl .= 'action=thankyou';
         $successUrl .= '&order_id=' . $order->id;
@@ -288,7 +285,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['deliverycountry'] = $order->shipping_country;
 
         // build the form
-        $redirectForm = '<form action="' . $this->get_upg_url() . '" method="post">';
+        $redirectForm = '<form action="' . $this->get_url() . '" method="post">';
         foreach ($transactionData as $field => $value) {
             $redirectForm .= '<input type="hidden" name="' . $field . '" value="' . $value . '">';
         }
@@ -299,7 +296,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         wp_die($redirectForm, array('response' => 200));
     }
 
-    function handle_redirect_from_upg($order_id)
+    function handle_redirect_from_securehosting($order_id)
     {
         global $woocommerce;
 
@@ -371,9 +368,12 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         return $secustring;
     }
 
-    function get_upg_url()
+    function get_url()
     {
-        return ($this->testmode === 'yes') ? $this->testurl : $this->liveurl;
+        $testUrl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
+        $liveUrl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
+
+        return $this->testMode ? $testUrl : $liveUrl;
     }
 
     function get_standard_product_fields()

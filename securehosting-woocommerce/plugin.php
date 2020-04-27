@@ -18,7 +18,7 @@ function initialise()
     // add gateway to WooCommerce
     function add_gateway($methods)
     {
-        $methods[] = 'WC_Gateway_UPG';
+        $methods[] = 'SecureHostingGateway';
         return $methods;
     }
 
