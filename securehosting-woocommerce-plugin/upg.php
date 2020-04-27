@@ -6,7 +6,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
     {
         $this->id = 'upg_legacy';
         $this->has_fields = false;
-        $this->method_title = __('UPG (Legacy)', 'woocommerce');
+        $this->method_title = __('Payment Method', 'woocommerce');
         $this->icon = apply_filters('woocommerce_upg_icon', plugins_url('upg.png', __FILE__));
 
         // load the settings.
@@ -26,7 +26,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $this->referrer = $this->get_option('referrer');
         $this->testmode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? 'yes' : 'no';
 
-        // UPG hosted pages urls
+        // SecureHosting hosted pages urls
         $this->testurl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
         $this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
 
@@ -49,21 +49,21 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             'enabled' => array(
                 'title' => __('Enabled', 'woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable UPG Payment Gateway (Legacy)', 'woocommerce'),
+                'label' => __('Enable SecureHosting Payment Gateway', 'woocommerce'),
                 'default' => 'no'
             ),
             'title' => array(
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
-                'default' => __('UPG', 'woocommerce'),
+                'default' => __('SecureHosting', 'woocommerce'),
                 'desc_tip' => true
             ),
             'description' => array(
                 'title' => __('Description', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the description which the user sees during checkout.', 'woocommerce'),
-                'default' => __('Pay securely via UPG with your credit/debit card.', 'woocommerce'),
+                'default' => __('Pay securely via SecureHosting with your credit/debit card.', 'woocommerce'),
                 'desc_tip' => true
             ),
             'reference' => array(
@@ -85,7 +85,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             'sharedSecret' => array(
                 'title' => __('Shared Secret', 'woocommerce'),
                 'type' => 'text',
-                'description' => __('The shared secret used to verify callbacks come from UPG.', 'woocommerce'),
+                'description' => __('The shared secret used to verify callbacks from SecureHosting.', 'woocommerce'),
                 'default' => '',
                 'placeholder' => '',
                 'desc_tip' => true
@@ -93,7 +93,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             'filename' => array(
                 'title' => __('File Name', 'woocommerce'),
                 'type' => 'text',
-                'description' => __('File name for the payment page templates uploaded to your UPG account.', 'woocommerce'),
+                'description' => __('File name for the payment page templates uploaded to your SecureHosting account.', 'woocommerce'),
                 'default' => 'woo_template.html',
                 'desc_tip' => true
             ),
@@ -129,8 +129,8 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
     public function admin_options()
     {
-        echo '<h3>' . __('UPG Payment Gateway (Legacy)', 'woocommerce') . '</h3>';
-        echo '<p>' . __('UPG Payment Gateway (Legacy) sends customers to your secure payment page, hosted by UPG. Please visit <a href="http://www.secure-server-hosting.com/" target="_blank"> Secure Hosting</a> for more information.') . '</p>';
+        echo '<h3>' . __('SecureHosting Payment Gateway for WooCommerce', 'woocommerce') . '</h3>';
+        echo '<p>' . __('The SecureHosting Payment Gateway sends customers to your secure payment page, hosted by Monek. Please visit <a href="http://www.secure-server-hosting.com/" target="_blank"> Secure Hosting</a> for more information.') . '</p>';
         echo '<table class="form-table">';
 
         // Generate the HTML For the settings form.
@@ -190,7 +190,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // did we fail the verification? (no secret saved = no verification, otherwise is must match the provided signature)
         if ($this->sharedSecret !== "" && !(isset($_REQUEST['verify']) && $this->verify_callback($verify, $this->sharedSecret, $transactionNumber))) {
-            $note = 'Callback received using an invalid shared secret. Please check with UPG if this transaction was succesful. (Transaction ID ' . $transactionNumber . ')';
+            $note = 'Callback received using an invalid shared secret. Please check with Monek if this transaction was successful. (Transaction ID ' . $transactionNumber . ')';
             $order->add_order_note(__($note, 'woocommerce'));
             return;
         }
@@ -206,7 +206,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // mark as payment complete
         $andVerified = $this->sharedSecret !== '' ? ' and callback verified ' : ' ';
-        $note = 'Payment confirmed' . $andVerified . 'by UPG: (Transaction ID ' . $transactionNumber . ')';
+        $note = 'Payment confirmed' . $andVerified . 'by Monek: (Transaction ID ' . $transactionNumber . ')';
         $order->add_order_note(__($note, 'woocommerce'));
         $order->payment_complete();
         return;
@@ -312,7 +312,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         if ($order->needs_payment()) {
             // mark as on-hold (we're awaiting the payment confirmation via callback)
             $order->update_status('on-hold');
-            $order->add_order_note(__('Awaiting payment confirmation from UPG.', 'woocommerce'));
+            $order->add_order_note(__('Awaiting payment confirmation from SecureHosting.', 'woocommerce'));
         }
 
         // reduce stock levels

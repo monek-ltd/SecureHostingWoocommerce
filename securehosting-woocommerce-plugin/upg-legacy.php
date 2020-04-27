@@ -1,4 +1,13 @@
 <?php
+/*
+    Plugin Name: SecureHosting Payment Gateway for WooCommerce
+    Description: Plugin allowing integration between WooCommerce and the SecureHosting Payment Gateway, for secure and robust processing of online card payments.
+    Version: 1.0
+    Author: Monek Ltd
+    Author URI: http://www.monek.com
+
+    NOTE: This header comment is required for WordPress, see https://developer.wordpress.org/plugins/plugin-basics/header-requirements/#header-fields for details.
+*/
 
 function woocommerce_gateway_upg_init()
 {
@@ -33,7 +42,7 @@ function woocommerce_gateway_upg_init()
         if (strpos($file, 'upg-legacy.php') !== false) {
 
             $new_links = array(
-                '<a href="https://github.com/upgplc/cart_legacy_woocommerce" target="_blank">Repo</a>'
+                '<a href="https://github.com/monek-ltd/SecureHostingWoocommerce" target="_blank">Repo</a>'
             );
 
             $links = array_merge($links, $new_links);
