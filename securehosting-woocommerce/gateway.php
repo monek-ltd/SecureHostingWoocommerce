@@ -118,7 +118,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             'phrase' => array(
                 'title' => __('Advanced Secuitems Phrase', 'woocommerce'),
                 'type' => 'text',
-                'description' => __('A phrase to be used to sign your transaction data sent to UPG.', 'woocommerce'),
+                'description' => __('A phrase to be used to sign your transaction data sent to SecureHosting.', 'woocommerce'),
                 'desc_tip' => true
             ),
             'referrer' => array(
