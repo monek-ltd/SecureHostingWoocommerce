@@ -6,8 +6,11 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
     {
         $this->id = 'gateway';
         $this->has_fields = false;
-        $this->method_title = __('Payment Method', 'woocommerce');
         $this->icon = apply_filters('woocommerce_upg_icon', plugins_url('upg.png', __FILE__));
+
+        // these are used in WordPress administration, in WooCommerce > Settings > Payments.
+        $this->method_title = __('SecureHosting', 'woocommerce');
+        $this->method_description = __('Pay securely via SecureHosting with your credit/debit card.', 'woocommerce');
 
         // load the settings.
         $this->init_form_fields();
