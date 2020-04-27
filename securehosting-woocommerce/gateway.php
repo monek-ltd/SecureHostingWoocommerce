@@ -4,7 +4,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 {
     public function __construct()
     {
-        $this->id = 'upg_legacy';
+        $this->id = 'gateway';
         $this->has_fields = false;
         $this->method_title = __('Payment Method', 'woocommerce');
         $this->icon = apply_filters('woocommerce_upg_icon', plugins_url('upg.png', __FILE__));

@@ -13,7 +13,7 @@ function woocommerce_gateway_upg_init()
 {
     if (!class_exists('WC_Payment_Gateway')) return;
 
-    require_once('upg.php');
+    require_once('gateway.php');
 
     // add gateway to WooCommerce
     function woocommerce_add_upg_gateway($methods)
@@ -39,7 +39,7 @@ function woocommerce_gateway_upg_init()
 
     function wc_gateway_upg_plugin_metalinks($links, $file)
     {
-        if (strpos($file, 'upg-legacy.php') !== false) {
+        if (strpos($file, 'plugin.php') !== false) {
 
             $new_links = array(
                 '<a href="https://github.com/monek-ltd/SecureHostingWoocommerce" target="_blank">Repo</a>'
