@@ -4,7 +4,7 @@ SecureHosting Payment Gateway for WooCommerce
 Manual Installation
 -------------------
 
-1. Copy the folder 'securehosting-woocommerce-plugin' to the '\wp-content\plugins\' directory for your WordPress website.
+1. Copy the folder 'securehosting-woocommerce' to the '\wp-content\plugins\' directory for your WordPress website.
 
 2. Within the WordPress Admin Dashboard, open the plugins tab and activate the "SecureHosting Payment Gateway for WooCommerce" plugin.
         If you have not already activated and configured WooCommerce you should also do this first.
