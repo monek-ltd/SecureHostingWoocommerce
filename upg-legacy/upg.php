@@ -217,7 +217,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         global $woocommerce;
         $order = wc_get_order($order_id);
 
-        //Product data
+        // product data
         $secuitems = $this->build_secuitems($order->get_items());
 
         $transactionSubTotal = $this->to_standard_format($order->get_subtotal());
@@ -225,7 +225,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         $transactionData = array();
 
-        //Order Details
+        // order Details
         $transactionData['shreference'] = $this->reference;
         $transactionData['checkcode'] = $this->checkcode;
         $transactionData['filename'] = $this->reference . '/' . $this->filename;
@@ -315,10 +315,10 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             $order->add_order_note(__('Awaiting payment confirmation from UPG.', 'woocommerce'));
         }
 
-        // Reduce stock levels
+        // reduce stock levels
         $order->reduce_order_stock();
 
-        // Remove cart
+        // remove cart
         $woocommerce->cart->empty_cart();
 
         // redirect to thank you page
