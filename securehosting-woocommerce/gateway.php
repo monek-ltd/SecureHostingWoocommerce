@@ -3,47 +3,50 @@
 // See https://docs.woocommerce.com/document/payment-gateway-api for further details.
 class SecureHostingGateway extends WC_Payment_Gateway
 {
+    // used throughout the class to denote the WooCommerce API for this payment gateway.
+    private $apiSuffix = 'securehosting';
+
+    // base URL for the WooCommerce API for this payment gateway.
+    private $apiUrl;
+
     public function __construct()
     {
+        $this->init_key_variables();
+
+        $this->init_form_fields();
+
+        $this->init_settings();
+
+        $this->load_settings_into_variables();
+
+        $this->add_hook_for_saving_settings();
+
+        // hooks
+        add_action("woocommerce_api_$this->apiSuffix", array(&$this, 'handle_actions'));
+    }
+
+    function init_key_variables()
+    {
+        // base URL for the WooCommerce API for this payment gateway.
+        $this->apiUrl = WooCommerce::api_request_url($this->apiSuffix);
+
+        // unique identifier for the gateway, also used when routing to the 'Settings' page via WooCommerce payment methods.
         $this->id = 'securehosting';
+
+        // has to be false as payment fields are not directly shown on the checkout, they are in SecureHosting.
         $this->has_fields = false;
+
+        // icon which is displayed alongside the payment method on the checkout screen.
         $this->icon = plugins_url('monek-logo.png', __FILE__);
 
         // these are used in WordPress administration, in WooCommerce > Settings > Payments.
         $this->method_title = __('SecureHosting', 'woocommerce');
         $this->method_description = __('Pay securely via SecureHosting with your credit/debit card.', 'woocommerce');
-
-        $this->init_form_fields();
-        $this->init_settings();
-
-        // load the value from each field in 'Settings' into a variable.
-        $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
-        $this->reference = $this->get_option('reference');
-        $this->checkcode = $this->get_option('checkcode');
-        $this->sharedSecret = $this->get_option('sharedSecret');
-        $this->ordstatus = $this->get_option('ordstatus');
-        $this->filename = $this->get_option('filename');
-        $this->activateas = isset($this->settings['activateas']) && $this->settings['activateas'] == 'yes' ? 'yes' : 'no';
-        $this->phrase = $this->get_option('phrase');
-        $this->referrer = $this->get_option('referrer');
-        $this->testMode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? true : false;
-
-        // save settings
-        if (is_admin()) {
-            if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {
-                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
-            } else {
-                add_action('woocommerce_update_options_payment_gateways', array(&$this, 'process_admin_options'));
-            }
-        }
-
-        // hooks
-        add_action('woocommerce_api_securehosting', array(&$this, 'handle_actions'));
     }
 
     function init_form_fields()
     {
+        // configuration for all fields on the 'Settings' screen for the plugin.
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enabled', 'woocommerce'),
@@ -126,6 +129,32 @@ class SecureHostingGateway extends WC_Payment_Gateway
         );
     }
 
+    function load_settings_into_variables()
+    {
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->reference = $this->get_option('reference');
+        $this->checkcode = $this->get_option('checkcode');
+        $this->sharedSecret = $this->get_option('sharedSecret');
+        $this->ordstatus = $this->get_option('ordstatus');
+        $this->filename = $this->get_option('filename');
+        $this->activateas = isset($this->settings['activateas']) && $this->settings['activateas'] == 'yes' ? 'yes' : 'no';
+        $this->phrase = $this->get_option('phrase');
+        $this->referrer = $this->get_option('referrer');
+        $this->testMode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? true : false;
+    }
+
+    function add_hook_for_saving_settings()
+    {
+        if (is_admin()) {
+            if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {
+                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
+            } else {
+                add_action('woocommerce_update_options_payment_gateways', array(&$this, 'process_admin_options'));
+            }
+        }
+    }
+
     public function admin_options()
     {
         echo '<h3>' . __('SecureHosting Payment Gateway for WooCommerce', 'woocommerce') . '</h3>';
@@ -168,7 +197,7 @@ class SecureHostingGateway extends WC_Payment_Gateway
     function process_payment($order_id)
     {
         // build the redirect url
-        $redirectUrl = WooCommerce::api_request_url('securehosting');
+        $redirectUrl = $this->apiUrl;
         $redirectUrl .= strpos($redirectUrl, '?') === false ? '?' : '&';
         $redirectUrl .= 'action=redirect&order_id=' . $order_id;
 
@@ -239,14 +268,14 @@ class SecureHostingGateway extends WC_Payment_Gateway
         $transactionData['secuitems'] = $secuitems;
 
         // callback
-        $callbackUrl = site_url(); // WooCommerce::api_request_url('securehosting'); $callbackUrl .= strpos($callbackUrl, '?') === false ? '?' : '&';
-        $callbackData = "wc-api|securehosting|action|callback|order_id|$order_id";
+        $callbackUrl = site_url();
+        $callbackData = "wc-api|$this->apiSuffix|action|callback|order_id|$order_id";
 
         $transactionData['callbackurl'] = $callbackUrl;
         $transactionData['callbackdata'] = $callbackData;
 
         // success redirect
-        $successUrl = WooCommerce::api_request_url('securehosting');
+        $successUrl = $this->apiUrl;
         $successUrl .= strpos($successUrl, '?') === false ? '?' : '&';
         $successUrl .= 'action=thankyou';
         $successUrl .= '&order_id=' . $order->id;
