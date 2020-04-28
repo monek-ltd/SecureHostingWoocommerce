@@ -76,7 +76,7 @@ class SecureHostingGateway extends WC_Payment_Gateway
                 'placeholder' => 'SH2XXXXX',
                 'desc_tip' => true
             ),
-            'checkcode' => array(
+            'checkCode' => array(
                 'title' => __('Check Code', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('The check code for your SecureHosting account.', 'woocommerce'),
@@ -99,7 +99,7 @@ class SecureHostingGateway extends WC_Payment_Gateway
                 'default' => 'woo_template.html',
                 'desc_tip' => true
             ),
-            'testmode' => array(
+            'testMode' => array(
                 'title' => __('Test Mode', 'woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Only allow test transactions with test cards.', 'woocommerce'),
@@ -107,7 +107,7 @@ class SecureHostingGateway extends WC_Payment_Gateway
                 'description' => __('Test mode can be used to test payments.', 'woocommerce'),
                 'desc_tip' => true
             ),
-            'activateas' => array(
+            'activateAsi' => array(
                 'title' => __('Enable Advanced Secuitems', 'woocommerce'),
                 'type' => 'checkbox',
                 'default' => 'no',
@@ -134,14 +134,14 @@ class SecureHostingGateway extends WC_Payment_Gateway
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->reference = $this->get_option('reference');
-        $this->checkcode = $this->get_option('checkcode');
+        $this->checkCode = $this->get_option('checkCode');
         $this->sharedSecret = $this->get_option('sharedSecret');
         $this->ordstatus = $this->get_option('ordstatus');
         $this->filename = $this->get_option('filename');
-        $this->activateas = isset($this->settings['activateas']) && $this->settings['activateas'] == 'yes' ? 'yes' : 'no';
+        $this->activateAsi = isset($this->settings['activateAsi']) && $this->settings['activateAsi'] == 'yes';
         $this->phrase = $this->get_option('phrase');
         $this->referrer = $this->get_option('referrer');
-        $this->testMode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? true : false;
+        $this->testMode = isset($this->settings['testMode']) && $this->settings['testMode'] == 'yes';
     }
 
     function add_hook_for_saving_settings()
@@ -256,7 +256,7 @@ class SecureHostingGateway extends WC_Payment_Gateway
 
         // order Details
         $transactionData['shreference'] = $this->reference;
-        $transactionData['checkcode'] = $this->checkcode;
+        $transactionData['checkcode'] = $this->checkCode;
         $transactionData['filename'] = $this->reference . '/' . $this->filename;
         $transactionData['orderid'] = $order->id;
         $transactionData['subtotal'] = $transactionSubTotal;
@@ -286,9 +286,12 @@ class SecureHostingGateway extends WC_Payment_Gateway
         $transactionData['return_url'] = $woocommerce->cart->get_cart_url();
 
         // should we secure the transaction?
-        if ($this->activateas == 'yes') {
-            if (preg_match('/value=\"([a-zA-Z0-9]{32})\"/', $this->sign_secuitems($secuitems, $transactionAmount), $Matches))
+        if ($this->activateAsi) {
+            $secuString = $this->create_secustring($secuitems, $transactionAmount);
+
+            if (preg_match('/value=\"([a-zA-Z0-9]{32})\"/', $secuString, $Matches)) {
                 $transactionData['secuString'] = $Matches[1];
+            }
         }
 
         // cardholder details
@@ -389,12 +392,12 @@ class SecureHostingGateway extends WC_Payment_Gateway
         return $secuitems;
     }
 
-    function sign_secuitems($secuitems, $transactionAmount)
+    function create_secustring($secuItems, $transactionAmount)
     {
         // calculate the hash of the products, the amount and the shared phrase
-        $secustring = 'value="' . md5($secuitems . $transactionAmount . $this->phrase) . '"';
+        $secuString = 'value="' . md5($secuItems . $transactionAmount . $this->phrase) . '"';
 
-        return $secustring;
+        return $secuString;
     }
 
     function get_url()
