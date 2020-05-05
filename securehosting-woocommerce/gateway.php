@@ -1,71 +1,71 @@
 <?php
 
-class WC_Gateway_UPG extends WC_Payment_Gateway
+// See https://docs.woocommerce.com/document/payment-gateway-api for further details.
+class SecureHostingGateway extends WC_Payment_Gateway
 {
+    // used throughout the class to denote the WooCommerce API for this payment gateway.
+    private $apiSuffix = 'securehosting';
+
+    // base URL for the WooCommerce API for this payment gateway.
+    private $apiUrl;
+
     public function __construct()
     {
-        $this->id = 'upg_legacy';
-        $this->has_fields = false;
-        $this->method_title = __('UPG (Legacy)', 'woocommerce');
-        $this->icon = apply_filters('woocommerce_upg_icon', plugins_url('upg.png', __FILE__));
+        $this->init_key_variables();
 
-        // load the settings.
         $this->init_form_fields();
+
         $this->init_settings();
 
-        // define user set variables
-        $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
-        $this->reference = $this->get_option('reference');
-        $this->checkcode = $this->get_option('checkcode');
-        $this->sharedSecret = $this->get_option('sharedSecret');
-        $this->ordstatus = $this->get_option('ordstatus');
-        $this->filename = $this->get_option('filename');
-        $this->activateas = isset($this->settings['activateas']) && $this->settings['activateas'] == 'yes' ? 'yes' : 'no';
-        $this->phrase = $this->get_option('phrase');
-        $this->referrer = $this->get_option('referrer');
-        $this->testmode = isset($this->settings['testmode']) && $this->settings['testmode'] == 'yes' ? 'yes' : 'no';
+        $this->load_settings_into_variables();
 
-        // UPG hosted pages urls
-        $this->testurl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
-        $this->liveurl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
-
-        // save settings
-        if (is_admin()) {
-
-            if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {
-                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
-            } else {
-                add_action('woocommerce_update_options_payment_gateways', array(&$this, 'process_admin_options'));
-            }
-        }
+        $this->add_hook_for_saving_settings();
 
         // hooks
-        add_action('woocommerce_api_wc_gateway_upg', array(&$this, 'wc_gateway_upg_callbacks'));
+        add_action("woocommerce_api_$this->apiSuffix", array(&$this, 'handle_actions'));
+    }
+
+    function init_key_variables()
+    {
+        // base URL for the WooCommerce API for this payment gateway.
+        $this->apiUrl = WooCommerce::api_request_url($this->apiSuffix);
+
+        // unique identifier for the gateway, also used when routing to the 'Settings' page via WooCommerce payment methods.
+        $this->id = 'securehosting';
+
+        // has to be false as payment fields are not directly shown on the checkout, they are in SecureHosting.
+        $this->has_fields = false;
+
+        // icon which is displayed alongside the payment method on the checkout screen.
+        $this->icon = plugins_url('monek-logo.png', __FILE__);
+
+        // these are used in WordPress administration, in WooCommerce > Settings > Payments.
+        $this->method_title = __('SecureHosting', 'woocommerce');
+        $this->method_description = __('Pay securely via SecureHosting with your credit/debit card.', 'woocommerce');
     }
 
     function init_form_fields()
     {
-
+        // configuration for all fields on the 'Settings' screen for the plugin.
         $this->form_fields = array(
             'enabled' => array(
                 'title' => __('Enabled', 'woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable UPG Payment Gateway (Legacy)', 'woocommerce'),
+                'label' => __('Enable SecureHosting Payment Gateway', 'woocommerce'),
                 'default' => 'no'
             ),
             'title' => array(
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
-                'default' => __('UPG', 'woocommerce'),
+                'default' => __('Credit/Debit Card', 'woocommerce'),
                 'desc_tip' => true
             ),
             'description' => array(
                 'title' => __('Description', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('This controls the description which the user sees during checkout.', 'woocommerce'),
-                'default' => __('Pay securely via UPG with your credit/debit card.', 'woocommerce'),
+                'default' => __('Pay securely via SecureHosting with your credit/debit card.', 'woocommerce'),
                 'desc_tip' => true
             ),
             'reference' => array(
@@ -76,7 +76,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 'placeholder' => 'SH2XXXXX',
                 'desc_tip' => true
             ),
-            'checkcode' => array(
+            'checkCode' => array(
                 'title' => __('Check Code', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('The check code for your SecureHosting account.', 'woocommerce'),
@@ -87,7 +87,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             'sharedSecret' => array(
                 'title' => __('Shared Secret', 'woocommerce'),
                 'type' => 'text',
-                'description' => __('The shared secret used to verify callbacks come from UPG.', 'woocommerce'),
+                'description' => __('The shared secret used to verify callbacks from SecureHosting.', 'woocommerce'),
                 'default' => '',
                 'placeholder' => '',
                 'desc_tip' => true
@@ -95,11 +95,11 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             'filename' => array(
                 'title' => __('File Name', 'woocommerce'),
                 'type' => 'text',
-                'description' => __('File name for the payment page templates uploaded to your UPG account.', 'woocommerce'),
+                'description' => __('File name for the payment page templates uploaded to your SecureHosting account.', 'woocommerce'),
                 'default' => 'woo_template.html',
                 'desc_tip' => true
             ),
-            'testmode' => array(
+            'testMode' => array(
                 'title' => __('Test Mode', 'woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Only allow test transactions with test cards.', 'woocommerce'),
@@ -107,7 +107,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 'description' => __('Test mode can be used to test payments.', 'woocommerce'),
                 'desc_tip' => true
             ),
-            'activateas' => array(
+            'activateAsi' => array(
                 'title' => __('Enable Advanced Secuitems', 'woocommerce'),
                 'type' => 'checkbox',
                 'default' => 'no',
@@ -117,7 +117,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
             'phrase' => array(
                 'title' => __('Advanced Secuitems Phrase', 'woocommerce'),
                 'type' => 'text',
-                'description' => __('A phrase to be used to sign your transaction data sent to UPG.', 'woocommerce'),
+                'description' => __('A phrase to be used to sign your transaction data sent to SecureHosting.', 'woocommerce'),
                 'desc_tip' => true
             ),
             'referrer' => array(
@@ -127,43 +127,66 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
                 'desc_tip' => true
             )
         );
+    }
 
+    function load_settings_into_variables()
+    {
+        $this->title = $this->get_option('title');
+        $this->description = $this->get_option('description');
+        $this->reference = $this->get_option('reference');
+        $this->checkCode = $this->get_option('checkCode');
+        $this->sharedSecret = $this->get_option('sharedSecret');
+        $this->ordstatus = $this->get_option('ordstatus');
+        $this->filename = $this->get_option('filename');
+        $this->activateAsi = isset($this->settings['activateAsi']) && $this->settings['activateAsi'] == 'yes';
+        $this->phrase = $this->get_option('phrase');
+        $this->referrer = $this->get_option('referrer');
+        $this->testMode = isset($this->settings['testMode']) && $this->settings['testMode'] == 'yes';
+    }
+
+    function add_hook_for_saving_settings()
+    {
+        if (is_admin()) {
+            if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {
+                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
+            } else {
+                add_action('woocommerce_update_options_payment_gateways', array(&$this, 'process_admin_options'));
+            }
+        }
     }
 
     public function admin_options()
     {
-
-        echo '<h3>' . __('UPG Payment Gateway (Legacy)', 'woocommerce') . '</h3>';
-        echo '<p>' . __('UPG Payment Gateway (Legacy) sends customers to your secure payment page, hosted by UPG. Please visit <a href="http://www.secure-server-hosting.com/" target="_blank"> Secure Hosting</a> for more information.') . '</p>';
+        echo '<h3>' . __('SecureHosting Payment Gateway for WooCommerce', 'woocommerce') . '</h3>';
+        echo '<p>' . __('The SecureHosting Payment Gateway sends customers to your secure payment page, hosted by Monek. Please visit <a href="http://www.secure-server-hosting.com/" target="_blank"> Secure Hosting</a> for more information.') . '</p>';
         echo '<table class="form-table">';
+
         // Generate the HTML For the settings form.
         $this->generate_settings_html();
+
         echo '</table>';
     }
 
-    public function wc_gateway_upg_callbacks()
+    public function handle_actions()
     {
         // grab the action param
         $action = $_REQUEST['action'];
 
         // switch on the action
         switch ($action) {
-
             case "callback":
                 // grab the order
                 $order_id = $_REQUEST['order_id'];
                 $this->handle_payment_callback($order_id);
                 wp_die('OK', '', array('response' => 200));
                 break;
-
             case "redirect":
                 $order_id = $_REQUEST['order_id'];
                 $this->build_redirect_page($order_id);
                 break;
-
             case "thankyou":
                 $order_id = $_REQUEST['order_id'];
-                $this->handle_redirect_from_upg($order_id);
+                $this->handle_redirect_from_securehosting($order_id);
                 break;
             default:
                 wp_die('Incorrect method supplied.');
@@ -174,7 +197,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
     function process_payment($order_id)
     {
         // build the redirect url
-        $redirectUrl = WooCommerce::api_request_url('wc_gateway_upg');
+        $redirectUrl = $this->apiUrl;
         $redirectUrl .= strpos($redirectUrl, '?') === false ? '?' : '&';
         $redirectUrl .= 'action=redirect&order_id=' . $order_id;
 
@@ -196,7 +219,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // did we fail the verification? (no secret saved = no verification, otherwise is must match the provided signature)
         if ($this->sharedSecret !== "" && !(isset($_REQUEST['verify']) && $this->verify_callback($verify, $this->sharedSecret, $transactionNumber))) {
-            $note = 'Callback received using an invalid shared secret. Please check with UPG if this transaction was succesful. (Transaction ID ' . $transactionNumber . ')';
+            $note = 'Callback received using an invalid shared secret. Please check with Monek if this transaction was successful. (Transaction ID ' . $transactionNumber . ')';
             $order->add_order_note(__($note, 'woocommerce'));
             return;
         }
@@ -204,7 +227,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         // did the payment fail?
         if (!isset($_REQUEST['upgauthcode']) && isset($_REQUEST['failurereason']) && $transactionNumber === '-1') {
 
-            $note = 'Payment declined by UPG: ' . $failureReason;
+            $note = 'Payment declined: ' . $failureReason;
             $order->add_order_note(__($note, 'woocommerce'));
             $order->update_status('failed');
             return;
@@ -212,7 +235,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         // mark as payment complete
         $andVerified = $this->sharedSecret !== '' ? ' and callback verified ' : ' ';
-        $note = 'Payment confirmed' . $andVerified . 'by UPG: (Transaction ID ' . $transactionNumber . ')';
+        $note = 'Payment confirmed' . $andVerified . ': (Transaction ID ' . $transactionNumber . ')';
         $order->add_order_note(__($note, 'woocommerce'));
         $order->payment_complete();
         return;
@@ -223,7 +246,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         global $woocommerce;
         $order = wc_get_order($order_id);
 
-        //Product data
+        // product data
         $secuitems = $this->build_secuitems($order->get_items());
 
         $transactionSubTotal = $this->to_standard_format($order->get_subtotal());
@@ -231,9 +254,9 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
 
         $transactionData = array();
 
-        //Order Details
+        // order Details
         $transactionData['shreference'] = $this->reference;
-        $transactionData['checkcode'] = $this->checkcode;
+        $transactionData['checkcode'] = $this->checkCode;
         $transactionData['filename'] = $this->reference . '/' . $this->filename;
         $transactionData['orderid'] = $order->id;
         $transactionData['subtotal'] = $transactionSubTotal;
@@ -245,14 +268,14 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['secuitems'] = $secuitems;
 
         // callback
-        $callbackUrl = site_url(); // WooCommerce::api_request_url('wc_gateway_upg'); $callbackUrl .= strpos($callbackUrl, '?') === false ? '?' : '&';
-        $callbackData = "wc-api|wc_gateway_upg|action|callback|order_id|$order_id";
+        $callbackUrl = site_url();
+        $callbackData = "wc-api|$this->apiSuffix|action|callback|order_id|$order_id";
 
         $transactionData['callbackurl'] = $callbackUrl;
         $transactionData['callbackdata'] = $callbackData;
 
         // success redirect
-        $successUrl = WooCommerce::api_request_url('wc_gateway_upg');
+        $successUrl = $this->apiUrl;
         $successUrl .= strpos($successUrl, '?') === false ? '?' : '&';
         $successUrl .= 'action=thankyou';
         $successUrl .= '&order_id=' . $order->id;
@@ -263,9 +286,12 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['return_url'] = $woocommerce->cart->get_cart_url();
 
         // should we secure the transaction?
-        if ($this->activateas == 'yes') {
-            if (preg_match('/value=\"([a-zA-Z0-9]{32})\"/', $this->sign_secuitems($secuitems, $transactionAmount), $Matches))
+        if ($this->activateAsi) {
+            $secuString = $this->create_secustring($secuitems, $transactionAmount);
+
+            if (preg_match('/value=\"([a-zA-Z0-9]{32})\"/', $secuString, $Matches)) {
                 $transactionData['secuString'] = $Matches[1];
+            }
         }
 
         // cardholder details
@@ -291,7 +317,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         $transactionData['deliverycountry'] = $order->shipping_country;
 
         // build the form
-        $redirectForm = '<form action="' . $this->get_upg_url() . '" method="post">';
+        $redirectForm = '<form action="' . $this->get_url() . '" method="post">';
         foreach ($transactionData as $field => $value) {
             $redirectForm .= '<input type="hidden" name="' . $field . '" value="' . $value . '">';
         }
@@ -302,7 +328,7 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         wp_die($redirectForm, array('response' => 200));
     }
 
-    function handle_redirect_from_upg($order_id)
+    function handle_redirect_from_securehosting($order_id)
     {
         global $woocommerce;
 
@@ -318,13 +344,13 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         if ($order->needs_payment()) {
             // mark as on-hold (we're awaiting the payment confirmation via callback)
             $order->update_status('on-hold');
-            $order->add_order_note(__('Awaiting payment confirmation from UPG.', 'woocommerce'));
+            $order->add_order_note(__('Awaiting payment confirmation from SecureHosting.', 'woocommerce'));
         }
 
-        // Reduce stock levels
+        // reduce stock levels
         $order->reduce_order_stock();
 
-        // Remove cart
+        // remove cart
         $woocommerce->cart->empty_cart();
 
         // redirect to thank you page
@@ -366,17 +392,20 @@ class WC_Gateway_UPG extends WC_Payment_Gateway
         return $secuitems;
     }
 
-    function sign_secuitems($secuitems, $transactionAmount)
+    function create_secustring($secuItems, $transactionAmount)
     {
         // calculate the hash of the products, the amount and the shared phrase
-        $secustring = 'value="' . md5($secuitems . $transactionAmount . $this->phrase) . '"';
+        $secuString = 'value="' . md5($secuItems . $transactionAmount . $this->phrase) . '"';
 
-        return $secustring;
+        return $secuString;
     }
 
-    function get_upg_url()
+    function get_url()
     {
-        return ($this->testmode === 'yes') ? $this->testurl : $this->liveurl;
+        $testUrl = 'https://test.secure-server-hosting.com/secutran/secuitems.php';
+        $liveUrl = 'https://www.secure-server-hosting.com/secutran/secuitems.php';
+
+        return $this->testMode ? $testUrl : $liveUrl;
     }
 
     function get_standard_product_fields()
