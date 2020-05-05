@@ -24,7 +24,7 @@ Manual Installation
 		You can rename this file if you desire, you only need to ensure the name of the file you upload to
 		your SecureHosting account is correctly set here.
 
-4. Upload the HTML files from the "forms" directory to your secure hosting account through the file manager. 
+4. Upload the HTML files from the "forms" directory to your SecureHosting account through the file manager. 
 We recommend uploading the default files first, testing, then amending these files as required. 
 File uploads are managed within your SecureHosting account via the menu option Settings > File Manager:
     - woo_template.html
