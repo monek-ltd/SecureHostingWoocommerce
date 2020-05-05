@@ -24,7 +24,9 @@ Manual Installation
 		You can rename this file if you desire, you only need to ensure the name of the file you upload to
 		your SecureHosting account is correctly set here.
 
-4. Upload the HTML files from the "forms" directory to your secure hosting account through the file manager. We recommend uploading the default files first, testing, then amending these files as required. File uploads are managed within your SecureHosting plc account via the menu option Settings > File Manager:
+4. Upload the HTML files from the "forms" directory to your secure hosting account through the file manager. 
+We recommend uploading the default files first, testing, then amending these files as required. 
+File uploads are managed within your SecureHosting account via the menu option Settings > File Manager:
     - woo_template.html
     - htmlgood.html
     - htmlbad.html
@@ -71,7 +73,8 @@ Troubleshooting
     - You have entered an incorrect client reference or check code into the WooCommerce Admin interface.
 
 - When I get transferred to the SecureHosting site, the following message appears: Advanced Secuitems security check failed.
-    - You have activated the Advanced Secuitems within your SecureHosting account but not correctly configured it. Please see steps 1-3 of the Advanced Configuration section of this guide.
+    - You have activated the Advanced Secuitems within your SecureHosting account but not correctly configured it. 
+    Please see steps 1-3 of the Advanced Configuration section of this guide.
 
 
 Change Log
