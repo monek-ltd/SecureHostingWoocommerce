@@ -79,21 +79,3 @@ Troubleshooting
     Please see steps 1-3 of the Advanced Configuration section of this guide.
 
 
-Change Log
-----------
-
-#### Version 1.0
-**Date**: _27/04/2020_
-
-##### Details:
-* Rebranded to remove references to UPG.
-
-#### Version 0.1
-**Date**: _04/03/2016_
-
-##### Details:
-* Added support for WooCommerce versions >= 2.0.0
-* AS hashes built locally.
-* Redirect is done via WC-API and a self-posting form. This allows greater amounts of data from the cart.
-* Rebranded for UPG Legacy.
-
