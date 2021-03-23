@@ -1,7 +1,7 @@
 SecureHosting Payment Gateway for WooCommerce
 ============================================
 
-Tested With wordpress 5.7 
+Tested with wordpress 5.7 
 
 Manual Installation
 -------------------
