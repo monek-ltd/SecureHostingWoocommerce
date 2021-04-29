@@ -185,7 +185,7 @@ class SecureHostingGateway extends WC_Payment_Gateway
                 $this->build_redirect_page($order_id);
                 break;
             case "thankyou":
-                $order_id = $_REQUEST['order_id'];
+                $order_id = $_REQUEST['amp;order_id'];
                 $this->handle_redirect_from_securehosting($order_id);
                 break;
             default:
